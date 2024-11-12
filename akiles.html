@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Simples</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-image: url('rf.jpg'); /* Substitua pelo caminho da sua imagem */
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro com transparência */
+            color: white;
+            text-align: center;
+        }
+
+        input {
+            margin: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .message {
+            margin-top: 20px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        <input type="text" id="username" placeholder="Usuário" />
+        <input type="password" id="password" placeholder="Senha" />
+        <button id="loginButton" onclick="login()">Entrar</button>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        // Credenciais fixas (você pode mudar aqui)
+        const storedUsername = "akiles"; // Altere para o seu nome de usuário
+        const storedPassword = "rafael"; // Altere para a sua senha
+        const maxAttempts = 2; // Número máximo de tentativas
+        const lockoutDuration = 1200000; // Duração do bloqueio em milissegundos (20 minutos)
+
+        // Inicializa o estado
+        if (!localStorage.getItem('attempts')) {
+            localStorage.setItem('attempts', 0);
+        }
+        if (!localStorage.getItem('lockoutEndTime')) {
+            localStorage.setItem('lockoutEndTime', 0);
+        }
+
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const messageDiv = document.getElementById("message");
+
+            // Verifica se está bloqueado
+            const lockoutEndTime = parseInt(localStorage.getItem('lockoutEndTime'));
+            if (lockoutEndTime > Date.now()) {
+                const remainingTime = Math.ceil((lockoutEndTime - Date.now()) / 1000);
+                messageDiv.textContent = `Você está bloqueado. Tente novamente em ${remainingTime} segundos.`;
+                return;
+            }
+
+            // Verifica as credenciais
+            if (username === storedUsername && password === storedPassword) {
+                messageDiv.textContent = "Login bem-sucedido!";
+                // Redireciona para outra página ou muda de tela
+                window.location.href = "akiles2.html"; // Altere para a URL desejada
+                // Reseta tentativas após login bem-sucedido
+                localStorage.setItem('attempts', 0);
+            } else {
+                let attempts = parseInt(localStorage.getItem('attempts'));
+                attempts++;
+                localStorage.setItem('attempts', attempts);
+                messageDiv.textContent = "Usuário ou senha incorretos.";
+
+                // Verifica se atingiu o número máximo de tentativas
+                if (attempts >= maxAttempts) {
+                    localStorage.setItem('lockoutEndTime', Date.now() + lockoutDuration); // Define o tempo de bloqueio
+                    messageDiv.textContent = "Você excedeu o número de tentativas. Tente novamente em 20 minutos.";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

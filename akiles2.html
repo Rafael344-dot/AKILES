@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulação de VPN</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simulação de VPN</h1>
+        <button onclick="toggleVPN()">Ativar/Desativar VPN nos EUA</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+    <script>
+        (function() {
+            var key = "sua-chave-secreta"; // Chave para criptografia
+            var encryptedVPNStatus = localStorage.getItem("vpnStatus");
+
+            if (encryptedVPNStatus) {
+                var decryptedVPNStatus = CryptoJS.AES.decrypt(encryptedVPNStatus, key).toString(CryptoJS.enc.Utf8);
+                if (decryptedVPNStatus === "true") {
+                    alert("VPN está ativada.");
+                } else {
+                    alert("VPN está desativada.");
+                }
+            }
+
+            window.toggleVPN = function() {
+                var currentStatus = encryptedVPNStatus ? CryptoJS.AES.decrypt(encryptedVPNStatus, key).toString(CryptoJS.enc.Utf8) === "true" : false;
+                var newStatus = !currentStatus;
+                var encryptedNewStatus = CryptoJS.AES.encrypt(newStatus.toString(), key).toString();
+                localStorage.setItem("vpnStatus", encryptedNewStatus);
+                alert("VPN " + (newStatus ? "ativada" : "desativada") + ".");
+            };
+        })();
+    </script>
+</body>
+</html>
